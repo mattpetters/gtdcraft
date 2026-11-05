@@ -1,0 +1,22 @@
+{
+  "$schema": "./theme.schema.json",
+  "name": "Focus Light",
+  "mode": "light",
+  "palette": {
+    "bg": "#ffffff", "rail": "#f3f2f1", "toolbar": "#ececeb", "field": "#f1f0ef", "pill": "#e4e3e2",
+    "pill-hover": "#d8d7d6", "selection": "#cfdcf5", "rail-sel": "#e2e1e0", "fg": "#1d1d1f", "fg-dim": "#6e6d6b",
+    "fg-faint": "#a3a2a0", "line": "#e3e2e0", "blue": "#2f6fed", "red": "#d93a32", "yellow": "#c99a06",
+    "orange": "#e8890c", "next": "#8a3fc7", "tag": "#e6e5e3", "tag-fg": "#4a4947", "badge": "#7b72d0",
+    "p-inbox": "#6d63c9", "p-forecast": "#d9473c", "p-review": "#5653d6", "p-flag": "#e8890c",
+    "p-projects": "#2f6fd1", "p-tags": "#8f45e0", "p-nearby": "#3f9f34", "p-cyan": "#2e8fa3"
+  },
+  "ui": {
+    "bg": "bg", "fg": "fg", "accent": "blue", "fg_dim": "fg-dim", "fg_faint": "fg-faint",
+    "rail": "rail", "toolbar": "toolbar", "column": "bg", "inspector": "rail", "field": "field",
+    "pill": "pill", "pill_hover": "pill-hover", "selection": "selection", "rail_selection": "rail-sel",
+    "line": "line", "on_accent": "#ffffff", "overdue": "red", "due_soon": "yellow", "flagged": "orange",
+    "next": "next", "tag_pill": "tag", "tag_text": "tag-fg", "badge": "badge", "link": "blue",
+    "red": "p-forecast", "orange": "p-flag", "yellow": "yellow", "green": "p-nearby", "cyan": "p-cyan",
+    "blue": "p-projects", "indigo": "p-review", "purple": "p-inbox", "violet": "p-tags"
+  }
+}

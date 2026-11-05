@@ -1,0 +1,4 @@
+// Copy to Local.xcconfig (git-ignored), or run ./ios/setup.sh, which writes it for you.
+DEVELOPMENT_TEAM = ABCDE12345
+GTD_BUNDLE_ID = com.example.gtdcraft
+GTD_APP_GROUP = group.com.example.gtdcraft

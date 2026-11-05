@@ -1,0 +1,40 @@
+[package]
+name = "gtdcraft"
+version = "0.20.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", features = ["serde"] }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "tiff"] }
+egui_extras = { version = "0.33", features = ["http", "image"] }
+egui_commonmark = "0.22"
+ureq = "2"
+objc2-event-kit = { version = "0.3", features = ["EKEventStore", "EKEvent", "EKCalendarItem", "EKCalendar", "EKObject", "EKTypes", "block2", "objc2-core-graphics"] }
+objc2 = "0.6"
+objc2-foundation = "0.3"
+block2 = "0.6"
+objc2-core-graphics = { version = "0.3", features = ["CGColor"] }
+tiny_http = "0.12"
+qrcode = { version = "0.14.1", default-features = false }
+objc2-user-notifications = { version = "0.3.2", features = ["UNUserNotificationCenter", "UNNotificationContent", "UNNotificationRequest", "UNNotificationSound", "UNNotificationTrigger", "UNNotification", "UNNotificationSettings", "UNNotificationCategory", "UNNotificationAction", "UNNotificationResponse", "block2", "objc2-core-location"] }
+objc2-core-location = { version = "0.3", features = ["CLLocationManager", "CLLocationManagerDelegate", "CLLocation", "CLCircularRegion", "CLRegion", "CLGeocoder", "CLPlacemark", "block2"] }
+objc2-map-kit = { version = "0.3", features = ["MKMapSnapshotter", "MKMapSnapshotOptions", "MKMapSnapshot", "MKGeometry", "MKStandardMapConfiguration", "MKMapConfiguration", "MKLocalSearch", "MKLocalSearchRequest", "MKLocalSearchResponse", "MKMapItem", "MKPlacemark", "objc2-core-location", "block2"] }
+
+# macOS: the menu bar, file dialogs and AppKit; eframe draws with OpenGL (glow)
+[target.'cfg(not(target_os = "ios"))'.dependencies]
+eframe = "0.33"
+muda = "0.21.2"
+rfd = "0.17.2"
+objc2-app-kit = { version = "0.3", features = ["NSApplication", "NSRunningApplication", "NSResponder", "NSEvent", "NSWindow", "NSAppearance", "NSImage", "NSBitmapImageRep", "NSImageRep", "NSGraphicsContext"] }
+
+# iPhone and iPad: eframe draws with Metal through wgpu
+[target.'cfg(target_os = "ios")'.dependencies]
+eframe = { version = "0.33", default-features = false, features = ["wgpu", "default_fonts", "accesskit"] }
+# wgpu's Metal backend and WGSL shaders (eframe's defaults would turn these on; they're off here)
+wgpu = { version = "27", default-features = false, features = ["metal", "wgsl"] }
+
+[profile.release]
+opt-level = 3

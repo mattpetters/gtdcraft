@@ -1,0 +1,25 @@
+name: Bug report
+description: Something in GTDCraft isn't working right. (GTDCraft › Help › Report a Bug fills in the Environment.)
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. …
+        2. …
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Filled in by the app (version, build, device, OS, the screen you were on).
+      render: text

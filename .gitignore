@@ -1,0 +1,10 @@
+dist/
+target/
+ios/build/
+ios/GTDCraft.xcodeproj/
+ios/Info.plist
+*.tmp
+.DS_Store
+shots/
+ios/Config/Local.xcconfig
+.claude/

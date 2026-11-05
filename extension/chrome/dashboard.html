@@ -1,0 +1,14 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css"><title>GTDCraft Web Activity — History</title></head>
+<body class="page">
+  <header><img src="icon128.png" alt=""><h1>Web activity</h1>
+    <select id="range"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="90">90 days</option></select></header>
+  <section><h2>Time per day</h2><div id="days" class="days"></div><p class="legend"><i class="focus"></i> focus <i class="neutral"></i> neutral <i class="distraction"></i> distraction</p></section>
+  <section class="cols">
+    <div><h2>Top sites</h2><ol id="sites"></ol></div>
+    <div><h2>Videos watched</h2><ol id="videos"></ol></div>
+  </section>
+  <section><h2>Interests over time</h2><p class="hint">Top words from your searches and the videos you watched, week by week.</p><div id="interests"></div></section>
+  <section><h2>Searches</h2><ol id="searches"></ol></section>
+  <script type="module" src="dashboard.js"></script>
+</body></html>

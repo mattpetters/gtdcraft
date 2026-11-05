@@ -1,0 +1,12 @@
+// Signing and identifiers for the iOS app, its widget and its Share extension.
+// These defaults build in the Simulator. To install on a device, run ./ios/setup.sh once: it writes
+// Local.xcconfig next to this file (git-ignored) with your Apple team and your own identifiers.
+
+// Your Apple Developer team ID (Xcode › Settings › Accounts; a free Apple ID works).
+DEVELOPMENT_TEAM =
+// The app's bundle ID; the widget and Share extension add .widgets and .share.
+GTD_BUNDLE_ID = local.gtdcraft
+// The App Group the app, widget and Share extension share (the sync server URL and token).
+GTD_APP_GROUP = group.local.gtdcraft
+
+#include? "Local.xcconfig"

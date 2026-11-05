@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "GTDCraft Web Activity",
+  "version": "0.1.0",
+  "description": "See where your browsing time goes: sites, searches and videos, on task or off, and your interests over time. Stays on your computer.",
+  "icons": { "128": "icon128.png" },
+  "action": { "default_popup": "popup.html", "default_icon": { "128": "icon128.png" } },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "options_page": "options.html",
+  "permissions": ["tabs", "storage", "idle", "alarms"],
+  "host_permissions": ["http://127.0.0.1:8766/*"]
+}

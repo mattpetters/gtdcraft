@@ -1,0 +1,30 @@
+:root { color-scheme: light dark; --bg: #1f1f28; --fg: #dcd7ba; --dim: #9e9b93; --line: #2a2a37; --focus: #4a80d8; --neutral: #6c6b6a; --distraction: #e5534b; --accent: #c79a5b; }
+@media (prefers-color-scheme: light) { :root { --bg: #f5f2ea; --fg: #2a2a2a; --dim: #6c6b6a; --line: #e4dfd2; } }
+body { background: var(--bg); color: var(--fg); font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; margin: 0; }
+.popup { width: 360px; padding: 14px; }
+.page { max-width: 980px; margin: 0 auto; padding: 24px; }
+header { display: flex; align-items: center; gap: 10px; }
+header img { width: 28px; height: 28px; border-radius: 6px; }
+header h1 { font-size: 17px; margin: 0; flex: 1; }
+header span { color: var(--dim); }
+h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--dim); margin: 16px 0 6px; }
+ol { list-style: none; padding: 0; margin: 0; }
+li { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--line); overflow: hidden; }
+li span { color: var(--dim); white-space: nowrap; }
+.bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--line); margin-top: 12px; }
+.bar i, .day i, .legend i { display: block; }
+i.focus { background: var(--focus); } i.neutral { background: var(--neutral); } i.distraction { background: var(--distraction); }
+#share, .hint { color: var(--dim); margin: 6px 0 0; }
+footer { margin-top: 14px; color: var(--dim); display: flex; gap: 6px; align-items: center; }
+a { color: var(--accent); }
+button { background: var(--line); color: var(--fg); border: 0; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+button.danger { color: var(--distraction); }
+.days { display: flex; align-items: flex-end; gap: 3px; height: 160px; border-bottom: 1px solid var(--line); }
+.day { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+.legend { color: var(--dim); display: flex; gap: 8px; align-items: center; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.week { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.week b { width: 150px; font-weight: 600; }
+.chip { background: var(--line); border-radius: 10px; padding: 2px 8px; }
+textarea { width: 100%; background: var(--line); color: var(--fg); border: 0; border-radius: 6px; padding: 8px; font: 12px ui-monospace, monospace; }

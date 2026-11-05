@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gtdcraft.local/theme.schema.json",
+  "title": "GTDCraft theme",
+  "description": "A colour scheme, nvim-style: a named palette plus UI slots that point at palette names (or #rrggbb). Missing slots are derived from bg, fg and accent. Perspective colours come from the hue slots and are adjusted at run time so they always read against the background.",
+  "type": "object",
+  "required": ["name", "mode", "palette", "ui"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "name": {"type": "string", "description": "Shown in Settings > Appearance."},
+    "author": {"type": "string"},
+    "mode": {"enum": ["dark", "light"], "description": "Used when following the system appearance."},
+    "palette": {
+      "type": "object",
+      "description": "Named colours. Any names you like.",
+      "additionalProperties": {"$ref": "#/$defs/hex"}
+    },
+    "ui": {
+      "type": "object",
+      "description": "UI slots. Each value is a palette name or #rrggbb.",
+      "properties": {
+        "bg": {"$ref": "#/$defs/ref", "description": "Outline background (required)"},
+        "fg": {"$ref": "#/$defs/ref", "description": "Main text (required)"},
+        "accent": {"$ref": "#/$defs/ref", "description": "Selected segment, primary buttons (required)"},
+        "fg_dim": {"$ref": "#/$defs/ref"}, "fg_faint": {"$ref": "#/$defs/ref"},
+        "rail": {"$ref": "#/$defs/ref"}, "toolbar": {"$ref": "#/$defs/ref"}, "column": {"$ref": "#/$defs/ref"},
+        "inspector": {"$ref": "#/$defs/ref"}, "field": {"$ref": "#/$defs/ref"}, "pill": {"$ref": "#/$defs/ref"},
+        "pill_hover": {"$ref": "#/$defs/ref"}, "selection": {"$ref": "#/$defs/ref"}, "rail_selection": {"$ref": "#/$defs/ref"},
+        "line": {"$ref": "#/$defs/ref"}, "on_accent": {"$ref": "#/$defs/ref"},
+        "overdue": {"$ref": "#/$defs/ref"}, "due_soon": {"$ref": "#/$defs/ref"}, "flagged": {"$ref": "#/$defs/ref"},
+        "next": {"$ref": "#/$defs/ref"}, "tag_pill": {"$ref": "#/$defs/ref"}, "tag_text": {"$ref": "#/$defs/ref"},
+        "badge": {"$ref": "#/$defs/ref"}, "link": {"$ref": "#/$defs/ref"},
+        "red": {"$ref": "#/$defs/ref"}, "orange": {"$ref": "#/$defs/ref"}, "yellow": {"$ref": "#/$defs/ref"},
+        "green": {"$ref": "#/$defs/ref"}, "cyan": {"$ref": "#/$defs/ref"}, "blue": {"$ref": "#/$defs/ref"},
+        "indigo": {"$ref": "#/$defs/ref"}, "purple": {"$ref": "#/$defs/ref"}, "violet": {"$ref": "#/$defs/ref"}
+      },
+      "required": ["bg", "fg", "accent"],
+      "additionalProperties": false
+    },
+    "map": {"enum": ["dark", "light"], "description": "Map tile style for Nearby; defaults to mode."}
+  },
+  "$defs": {
+    "hex": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"},
+    "ref": {"type": "string", "description": "Palette name or #rrggbb"}
+  }
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleName</key><string>GTDCraft</string>
+  <key>CFBundleDisplayName</key><string>GTDCraft</string>
+  <key>CFBundleIdentifier</key><string>local.gtdcraft</string>
+  <key>CFBundleExecutable</key><string>gtdcraft</string>
+  <key>CFBundleIconFile</key><string>GTDCraft</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>0.1.0</string>
+  <key>CFBundleVersion</key><string>1</string>
+  <key>NSHighResolutionCapable</key><true/>
+  <key>NSCalendarsFullAccessUsageDescription</key><string>GTDCraft shows your Calendar events in Forecast and counts down to the next one in the Focus window.</string>
+  <key>NSCalendarsUsageDescription</key><string>GTDCraft shows your Calendar events in Forecast and counts down to the next one in the Focus window.</string>
+  <key>NSLocationUsageDescription</key><string>GTDCraft uses your location to show nearby places in the Nearby perspective.</string>
+  <key>NSLocationWhenInUseUsageDescription</key><string>GTDCraft uses your location to show nearby places and sort them by distance.</string>
+</dict></plist>

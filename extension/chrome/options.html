@@ -1,0 +1,10 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css"><title>GTDCraft Web Activity — Settings</title></head>
+<body class="page">
+  <header><img src="icon128.png" alt=""><h1>Settings</h1></header>
+  <section><h2>On task</h2><p class="hint">One site per line; subdomains count too.</p><textarea id="focus" rows="8"></textarea></section>
+  <section><h2>Distractions</h2><textarea id="distraction" rows="8"></textarea></section>
+  <section><label><input type="checkbox" id="send"> Send activity to GTDCraft on this computer (http://127.0.0.1:8766), for its Stats view and your agents</label></section>
+  <section><button id="save">Save</button> <button id="clear" class="danger">Delete all activity</button> <span id="msg"></span></section>
+  <script type="module" src="options.js"></script>
+</body></html>

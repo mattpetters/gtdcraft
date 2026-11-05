@@ -1,0 +1,22 @@
+{
+  "$schema": "./theme.schema.json",
+  "name": "Kanagawa Paper Ink",
+  "author": "palette from mattpetters/emacs-kanagawa-paper-canvas-ink (after thesimonho/kanagawa-paper.nvim)",
+  "mode": "dark",
+  "palette": {
+    "bg": "#1F1F28", "bg-dim": "#181820", "bg-p1": "#2A2A37", "bg-p2": "#363646", "bg-m1": "#1a1a22",
+    "bg-m3": "#16161D", "bg-visual": "#363646", "fg": "#DCD7BA", "fg-dim": "#9e9b93", "nontext": "#54546D",
+    "header1": "#8992a7", "keyword": "#a292a3", "special3": "#938AA9", "error": "#c4746e", "warning": "#c4b28a",
+    "info": "#658594", "ok": "#699469", "hint": "#8ea49e", "accent1": "#658594", "accent2": "#b6927b",
+    "fun": "#859fac", "fg-strong": "#DCD7BA"
+  },
+  "ui": {
+    "bg": "bg", "fg": "fg", "accent": "info", "fg_dim": "fg-dim", "fg_faint": "nontext",
+    "rail": "bg-m3", "toolbar": "bg-m3", "column": "bg", "inspector": "bg-m1", "field": "bg-p1",
+    "pill": "bg-p1", "pill_hover": "bg-p2", "selection": "bg-visual", "rail_selection": "bg-p1",
+    "line": "bg-p1", "on_accent": "fg-strong", "overdue": "error", "due_soon": "warning", "flagged": "accent2",
+    "next": "keyword", "tag_pill": "bg-p2", "tag_text": "fg-dim", "badge": "bg-p2", "link": "fun",
+    "red": "error", "orange": "accent2", "yellow": "warning", "green": "ok", "cyan": "hint",
+    "blue": "info", "indigo": "header1", "purple": "special3", "violet": "keyword"
+  }
+}

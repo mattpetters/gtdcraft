@@ -1,0 +1,668 @@
+{
+  "version": 1,
+  "values": [
+    {
+      "name": "due soon interval",
+      "group": "dates",
+      "value": 172800,
+      "unit": "s",
+      "source": "observed default"
+    },
+    {
+      "name": "due soon granularity",
+      "group": "dates",
+      "value": "days",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "due soon cutoff second edge",
+      "group": "dates",
+      "value": "start of today + 2 days - 1 s",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "default due time",
+      "group": "dates",
+      "value": "17:00",
+      "source": "observed default"
+    },
+    {
+      "name": "default planned time",
+      "group": "dates",
+      "value": "09:00",
+      "source": "observed default"
+    },
+    {
+      "name": "default defer time",
+      "group": "dates",
+      "value": "00:00",
+      "source": "observed default"
+    },
+    {
+      "name": "floating time zone",
+      "group": "dates",
+      "value": true,
+      "source": "observed default"
+    },
+    {
+      "name": "review every",
+      "group": "review",
+      "value": 7,
+      "unit": "days",
+      "source": "observed default"
+    },
+    {
+      "name": "new action groups sequential",
+      "group": "projects",
+      "value": false,
+      "source": "observed default"
+    },
+    {
+      "name": "default project type",
+      "group": "projects",
+      "value": "parallel",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "status order",
+      "group": "status",
+      "value": "completed, dropped, project inactive, overdue, deferred, due soon, next, blocked, available",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "status numbers",
+      "group": "status",
+      "value": "blocked 0, available 1, next 2, completed 3, due soon 4, overdue 5, dropped 6",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "on-hold tag blocks actions",
+      "group": "status",
+      "value": true,
+      "estimated": true
+    },
+    {
+      "name": "new repetition",
+      "group": "repeat",
+      "value": "every 1 day, regularly, based on due",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "dropping a repeating item repeats",
+      "group": "repeat",
+      "value": true,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "hour rounding point",
+      "group": "repeat",
+      "value": 30,
+      "unit": "minutes",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "inspector width",
+      "group": "layout",
+      "value": 290,
+      "unit": "pt",
+      "source": "observed default"
+    },
+    {
+      "name": "row height",
+      "group": "layout",
+      "value": 31,
+      "unit": "pt",
+      "source": "design choice"
+    },
+    {
+      "name": "snooze minutes",
+      "group": "notifications",
+      "value": 15,
+      "unit": "min",
+      "source": "observed default"
+    },
+    {
+      "name": "inbox shortcut",
+      "group": "controls",
+      "value": "cmd+1",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "complete shortcut",
+      "group": "controls",
+      "value": "space",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "drop shortcut",
+      "group": "controls",
+      "value": "option+space",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "toggle complete rule",
+      "group": "controls",
+      "value": "if all selected are completed, uncomplete; else complete",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "drop repeating task prompts",
+      "group": "repeat",
+      "value": true,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "mark reviewed selects next project",
+      "group": "review",
+      "value": true,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "hide completed delay",
+      "group": "cleanup",
+      "value": 0.25,
+      "unit": "s",
+      "source": "observed default"
+    },
+    {
+      "name": "hide completed automatically",
+      "group": "cleanup",
+      "value": false,
+      "source": "observed default"
+    },
+    {
+      "name": "quick entry shortcut",
+      "group": "controls",
+      "value": "ctrl+option+space",
+      "source": "observed default"
+    },
+    {
+      "name": "bare delete key deletes",
+      "group": "controls",
+      "value": false,
+      "source": "observed default"
+    },
+    {
+      "name": "status circle diameter",
+      "group": "layout",
+      "value": "23 * base font / 17",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "base font size",
+      "group": "layout",
+      "value": 13.5,
+      "unit": "pt",
+      "estimated": true
+    },
+    {
+      "name": "due reminder on by default",
+      "group": "notifications",
+      "value": true,
+      "source": "observed default"
+    },
+    {
+      "name": "defer reminder on by default",
+      "group": "notifications",
+      "value": false,
+      "source": "observed default"
+    },
+    {
+      "name": "planned reminder on by default",
+      "group": "notifications",
+      "value": false,
+      "source": "observed default"
+    },
+    {
+      "name": "perspective colour minimum contrast",
+      "group": "themes",
+      "value": 3.0,
+      "unit": "ratio",
+      "estimated": true
+    },
+    {
+      "name": "focus light palette",
+      "group": "themes",
+      "value": "macOS light grey family",
+      "estimated": true
+    },
+    {
+      "name": "latest time to start",
+      "group": "notifications",
+      "value": "effective due - estimated minutes",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "latest time to start reminder on by default",
+      "group": "notifications",
+      "value": false,
+      "source": "observed default"
+    },
+    {
+      "name": "reminders use effective dates",
+      "group": "notifications",
+      "value": true,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "snooze",
+      "group": "notifications",
+      "value": 15,
+      "unit": "min",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "default place radius",
+      "group": "places",
+      "value": 1.0,
+      "unit": "km",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "place radius tiers",
+      "group": "places",
+      "value": "200, 1000, 10000 m",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "built-in perspectives deletable",
+      "group": "perspectives",
+      "value": false,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "effective flag",
+      "group": "flags",
+      "value": "own flag or parent's effective flag",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "turned-off perspective rules are skipped",
+      "group": "perspectives",
+      "value": true,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "perspective rule kinds",
+      "group": "perspectives",
+      "value": 27,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "outdent needs a parent action",
+      "group": "controls",
+      "value": true,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "pomodoro work minutes",
+      "group": "time",
+      "value": 25,
+      "unit": "min",
+      "estimated": true
+    },
+    {
+      "name": "date modifier next",
+      "group": "dates",
+      "value": -1,
+      "source": "src/dates.rs parse_day"
+    },
+    {
+      "name": "date modifier last",
+      "group": "dates",
+      "value": 1,
+      "source": "src/dates.rs parse_day"
+    },
+    {
+      "name": "last multiplier",
+      "group": "dates",
+      "value": -1,
+      "source": "src/dates.rs parse_day"
+    },
+    {
+      "name": "week unit days",
+      "group": "dates",
+      "value": 7,
+      "unit": "days",
+      "source": "src/dates.rs parse_day"
+    },
+    {
+      "name": "next weekday offset",
+      "group": "dates",
+      "value": "target - current + 7",
+      "source": "src/dates.rs parse_day"
+    },
+    {
+      "name": "last weekday offset",
+      "group": "dates",
+      "value": "target - current - 7",
+      "source": "src/dates.rs parse_day"
+    },
+    {
+      "name": "bare weekday same day",
+      "group": "dates",
+      "value": 0,
+      "unit": "days",
+      "source": "src/dates.rs parse_day"
+    },
+    {
+      "name": "noon hour",
+      "group": "dates",
+      "value": 12,
+      "unit": "h",
+      "source": "src/dates.rs parse_moment"
+    },
+    {
+      "name": "tonight hour",
+      "group": "dates",
+      "value": 23,
+      "unit": "h",
+      "source": "src/dates.rs parse_moment"
+    },
+    {
+      "name": "month without year",
+      "group": "dates",
+      "value": "same or later month = this year, earlier month = next year",
+      "source": "src/dates.rs parse_day"
+    },
+    {
+      "name": "sidebar width with titles",
+      "group": "layout",
+      "value": 82,
+      "unit": "pt",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "sidebar width without titles",
+      "group": "layout",
+      "value": 64,
+      "unit": "pt",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "sidebar tab min height with title",
+      "group": "layout",
+      "value": 64,
+      "unit": "pt",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "sidebar top inset",
+      "group": "layout",
+      "value": 16,
+      "unit": "pt",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "sidebar selection corner radius (macOS 27+)",
+      "group": "layout",
+      "value": 12,
+      "unit": "pt",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "sidebar selection corner radius (before macOS 27)",
+      "group": "layout",
+      "value": 16,
+      "unit": "pt",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "sidebar selection outer padding",
+      "group": "layout",
+      "value": 4,
+      "unit": "pt",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "sidebar scroll indicators",
+      "group": "layout",
+      "value": "never",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "sidebar minimum tap target",
+      "group": "layout",
+      "value": 44,
+      "unit": "pt",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "git autosave quiet time",
+      "group": "files",
+      "value": 30,
+      "unit": "s",
+      "estimated": true
+    },
+    {
+      "name": "hierarchical name separator",
+      "group": "names",
+      "value": " : ",
+      "source": "src/model.rs project_path"
+    },
+    {
+      "name": "typed path creation",
+      "group": "names",
+      "value": "reuse existing child per level, insert missing levels",
+      "source": "src/model.rs project_for_path, tag_for_path"
+    },
+    {
+      "name": "cancelled event status",
+      "group": "calendar",
+      "value": 3,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "day end offset for events",
+      "group": "calendar",
+      "value": -60,
+      "unit": "s",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "event prefetch days",
+      "group": "calendar",
+      "value": 35,
+      "unit": "days",
+      "source": "src/focus.rs poll_calendar"
+    },
+    {
+      "name": "all-day events in countdown",
+      "group": "calendar",
+      "value": false,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "calendar refresh",
+      "group": "calendar",
+      "value": 5,
+      "unit": "min",
+      "estimated": true
+    },
+    {
+      "name": "event hour fill minimum",
+      "group": "calendar",
+      "value": 1,
+      "unit": "hours",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "minutes per hour in event collation",
+      "group": "calendar",
+      "value": 60,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "hours in event timeline",
+      "group": "calendar",
+      "value": 24,
+      "source": "observed behaviour"
+    },
+    {
+      "name": "auto-excluded calendars",
+      "group": "calendar",
+      "value": "natural-language suggested, suggested events, Facebook birthdays",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "sync tie-break",
+      "group": "sync",
+      "value": "existing copy wins equal modified times",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "join entry tie-break",
+      "group": "sync",
+      "value": "existing entry wins equal added dates",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "sync on launch",
+      "group": "sync",
+      "value": true,
+      "source": "observed default"
+    },
+    {
+      "name": "sync on quit",
+      "group": "sync",
+      "value": "true (5 s limit)",
+      "source": "observed default"
+    },
+    {
+      "name": "delay integration while user is active",
+      "group": "sync",
+      "value": true,
+      "source": "observed default"
+    },
+    {
+      "name": "calendar access granted when",
+      "group": "calendar",
+      "value": "authorization status == 3 (full access)",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "calendar access asked automatically",
+      "group": "calendar",
+      "value": "once when the event store is created and access isn't full",
+      "source": "src/focus.rs poll_calendar"
+    },
+    {
+      "name": "after calendar permission answer",
+      "group": "calendar",
+      "value": "drop event caches and refetch on the main queue",
+      "source": "observed behaviour"
+    },
+    {
+      "name": "version numbers",
+      "group": "app",
+      "value": "marketing (CFBundleShortVersionString) + build (CFBundleVersion)",
+      "source": "build.rs"
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry frame autosave",
+      "value": "size and place kept (QuickEntryWindow); centred when none saved",
+      "source": "observed behaviour",
+      "unit": ""
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry kept on screen",
+      "value": "centre if off screen, shrink to fit if still too big",
+      "source": "observed behaviour",
+      "unit": ""
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry min width extra",
+      "value": 99,
+      "source": "observed behaviour",
+      "unit": "pt"
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry min width icons",
+      "value": 4,
+      "source": "observed behaviour",
+      "unit": "icons"
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry measured fixed date",
+      "value": "2022-12-20",
+      "source": "observed behaviour",
+      "unit": ""
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry window level",
+      "value": 8,
+      "source": "observed behaviour",
+      "unit": ""
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry size",
+      "value": "713 x 196",
+      "source": "design choice",
+      "unit": "pt"
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry min height",
+      "value": 150,
+      "source": "estimated",
+      "estimated": true,
+      "unit": "pt"
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry can become key",
+      "value": true,
+      "unit": "",
+      "source": "observed behaviour"
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry show order",
+      "value": "prepare, min width, keep on screen, makeKeyAndOrderFront",
+      "unit": "",
+      "source": "observed behaviour"
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry hide",
+      "value": "orderOut (frame kept)",
+      "unit": "",
+      "source": "observed behaviour"
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry appearance",
+      "value": "follows NSApp.effectiveAppearance",
+      "unit": "",
+      "source": "observed behaviour"
+    },
+    {
+      "group": "app",
+      "name": "build number",
+      "value": "CFBundleVersion (commit count)",
+      "unit": "",
+      "source": "build.rs, make-ios-device.sh"
+    },
+    {
+      "group": "app",
+      "name": "export version stamp",
+      "value": "not used: no HTML export",
+      "unit": "",
+      "source": "observed behaviour"
+    },
+    {
+      "group": "quick entry",
+      "name": "quick entry save animation",
+      "value": 0,
+      "unit": "s",
+      "source": "observed behaviour"
+    }
+  ]
+}

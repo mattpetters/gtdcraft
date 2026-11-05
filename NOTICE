@@ -1,0 +1,16 @@
+GTDCraft
+Copyright (c) 2026 Matt Petters and the GTDCraft contributors.
+Licensed under the MIT License or the Apache License, Version 2.0, at your option
+(LICENSE-MIT, LICENSE-APACHE).
+
+Trademarks
+
+GTD and Getting Things Done are registered trademarks of the David Allen Company. OmniFocus is a trademark of
+The Omni Group. GTDCraft is an independent project, not affiliated with, sponsored by or endorsed by either.
+
+Third-party material
+
+- Theme colour palettes (themes/*.json) come from each scheme's authors via iTerm2-Color-Schemes
+  (https://github.com/mbadolato/iTerm2-Color-Schemes, MIT) and kanagawa-paper.nvim
+  (https://github.com/thesimonho/kanagawa-paper.nvim); each theme file names its source in "author".
+- Rust dependencies are listed in Cargo.lock under their own licenses.
