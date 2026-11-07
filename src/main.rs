@@ -25,12 +25,15 @@ mod menu;
 #[path = "menu_ios.rs"]
 mod menu;
 mod mcp;
+// TEMPORARY decisions-URL setter. Remove this line with src/decisions_url_set.rs.
+mod decisions_url_set;
 mod model;
 mod notes;
 mod places;
 mod refs;
 mod rules;
 mod stats;
+mod status;
 mod subsystems;
 mod sync;
 mod theme;
@@ -394,6 +397,8 @@ struct Gtd {
     sync_failures: u32,
     sync_fail_hidden: bool,
     sync_msg: String,
+    /// Bottom-bar lights and Settings › Status (status.rs).
+    status: status::Monitor,
     /// `Store::layout_fingerprint` as last saved or adopted: a different one on save means the layout changed here.
     layout_print: u64,
     /// The same for the connections that sync (`Store::connections_fingerprint`).
@@ -631,6 +636,7 @@ fn main() -> eframe::Result<()> {
         sync_failures: 0,
         sync_fail_hidden: false,
         sync_msg: String::new(),
+        status: Default::default(),
         pending_sync_link: None,
         pending_sync_db: None,
         renaming_folder: None,
@@ -1130,6 +1136,9 @@ impl eframe::App for Gtd {
                     let d = self.store.derive(now);
                     // scrolls, no bar
                     egui::ScrollArea::vertical().id_salt("rail-scroll").scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::AlwaysHidden).show(ui, |ui| self.rail(ui, &d));
+                    // the subsystems' lights, at the rail's foot (always on screen; the iPhone upright has them in its tab bar)
+                    let foot = ui.max_rect();
+                    self.status_dots(ui, pos2(foot.center().x, foot.bottom() - 12.0));
                 });
         }
         // Panels slide in and out (egui's animated side panels).
@@ -1287,6 +1296,7 @@ impl eframe::App for Gtd {
         }
         self.focus_window(ctx, now);
         self.sync_tick(ctx);
+        self.status_tick(ctx);
         self.git_tick(ctx);
         self.db_windows(ctx);
         if !portrait && !landscape {
@@ -2705,6 +2715,8 @@ impl Gtd {
                 self.phone_cmd(cmd);
             }
         }
+        // the subsystems' lights, small along the bar's top edge
+        self.status_dots(ui, pos2(bar.center().x, bar.top() + 7.0));
         // perspective tabs: the favourites (starred), four across; more scroll sideways
         let inbox = self.inbox_count(d);
         let favs: Vec<View> = self.store.settings.perspectives.iter().filter(|p| p.visible && p.is_favorite()).filter_map(|p| View::from_key(&p.key)).filter(|v| self.visible_views().contains(v)).collect();
@@ -3304,6 +3316,26 @@ impl Gtd {
             }
         }
         if self.view == View::Review {
+            // the Review Guru: a slacker-dude icon that launches an assisted grooming pass over the whole database.
+            // It's greyed during the zen cooldown (Settings › Organization), with a tool tip saying how long is left.
+            let gtop = if landscape { full.top() + 8.0 } else { full.top() + 10.0 };
+            let gb = Rect::from_min_size(pos2(full.right() - 42.0, gtop), vec2(34.0, 34.0));
+            let left = self.store.settings.guru_days_left(now);
+            let ready = left <= 0;
+            let gresp = ui.interact(gb, ui.id().with("guru"), Sense::click());
+            let gcol = if !ready { th().dim } else if gresp.hovered() { th().accent } else { mix(th().accent, th().text, 0.15) };
+            if gresp.hovered() && ready {
+                p.circle_filled(gb.center(), 17.0, mix(th().bg, th().accent, 0.14));
+            }
+            draw_guru(&p, gb.center(), gcol);
+            let gresp = if ready {
+                gresp.on_hover_text("Review Guru — an assisted grooming pass over your whole database")
+            } else {
+                gresp.on_hover_text(format!("Relax man, zen is now. You have {left} more day{} before your next guru sesh.", if left == 1 { "" } else { "s" }))
+            };
+            if ready && gresp.clicked() {
+                self.guru_compose();
+            }
             if let Some(Sel::Project(pid)) = self.sel {
                 let top = if landscape {
                     header_bottom = full.top() + 44.0;
@@ -3311,7 +3343,7 @@ impl Gtd {
                 } else {
                     full.top() + 16.0
                 };
-                let br = Rect::from_min_size(pos2(full.right() - 150.0, top), vec2(130.0, 28.0));
+                let br = Rect::from_min_size(pos2(full.right() - 150.0 - 48.0, top), vec2(130.0, 28.0));
                 let resp = ui.interact(br, ui.id().with("markrev"), Sense::click());
                 p.rect_filled(br, 7.0, if resp.hovered() { th().accent.gamma_multiply(1.15) } else { th().accent });
                 p.text(br.center(), Align2::CENTER_CENTER, "Mark Reviewed", FontId::proportional(13.5), Color32::WHITE);
@@ -4877,6 +4909,7 @@ impl Gtd {
             10 => self.settings_connections(ui),
             8 => self.settings_organization(ui),
             9 => self.settings_dates(ui),
+            status::STATUS_TAB => self.settings_status(ui),
             _ => false,
         }
     }
@@ -4921,6 +4954,15 @@ impl Gtd {
             ch |= ui.add(egui::DragValue::new(&mut st.review_every_days).range(1..=365)).changed();
             ui.label("days");
         });
+        ui.add_space(4.0);
+        ch |= ui.checkbox(&mut st.guru_cadence, "Limit the Review Guru to one grooming pass every").changed();
+        ui.horizontal(|ui| {
+            ui.add_enabled_ui(st.guru_cadence, |ui| {
+                ch |= ui.add(egui::DragValue::new(&mut st.guru_every_days).range(1..=365)).changed();
+            });
+            ui.label("days");
+        });
+        ui.label(egui::RichText::new("Off: the Guru is always available. Otherwise it greys out between sessions with a zen reminder.").color(th().dim).size(12.0));
         ui.separator();
         ui.heading("Organization");
         ch |= ui.checkbox(&mut st.auto_hide_completed, "Hide completed items automatically").changed();
@@ -5511,7 +5553,7 @@ const SETTINGS_HOME: u8 = 255;
 
 /// Settings pages in sidebar order: Calendar sits after Notifications, Keyboard last.
 /// The numbers are `settings_tab` (kept stable: `--settings N` and links into Settings use them).
-const SETTINGS_PAGES: [(&str, u8); 9] = [
+const SETTINGS_PAGES: [(&str, u8); 10] = [
     ("General", 0),
     ("Organization", 8),
     ("Appearance", 1),
@@ -5521,6 +5563,7 @@ const SETTINGS_PAGES: [(&str, u8); 9] = [
     ("Calendar", 7),
     ("Sync", 6),
     ("Keyboard", 4),
+    ("Status", status::STATUS_TAB),
 ];
 
 /// iOS-style grouped rows: one rounded block, 44 pt rows, a hairline between rows from the
@@ -6734,6 +6777,25 @@ fn draw_gear(p: &egui::Painter, c: Pos2, col: Color32) {
     }
     p.circle_filled(c, 6.0, col);
     p.circle_filled(c, 2.4, th().bg);
+}
+
+/// The Review Guru: a slacker dude sitting in a calm meditation pose (shades on, zen aura overhead), drawn in the
+/// house glyph style. ~24 px tall, centred on `c`.
+fn draw_guru(p: &egui::Painter, c: Pos2, col: Color32) {
+    // the mat he sits on
+    p.line_segment([c + vec2(-12.0, 10.0), c + vec2(12.0, 10.0)], Stroke::new(1.3, mix(col, th().bg, 0.45)));
+    // seated meditation silhouette: narrow shoulders over wide crossed legs (hands rest on the knees)
+    p.add(Shape::convex_polygon(
+        vec![c + vec2(0.0, -5.0), c + vec2(7.0, 1.0), c + vec2(11.0, 9.0), c + vec2(-11.0, 9.0), c + vec2(-7.0, 1.0)],
+        col,
+        Stroke::NONE,
+    ));
+    p.circle_filled(c + vec2(-10.5, 8.5), 2.0, col);
+    p.circle_filled(c + vec2(10.5, 8.5), 2.0, col);
+    // head, sat just above the shoulders
+    p.circle_filled(c + vec2(0.0, -9.0), 4.0, col);
+    // the Dude's shades: a short bar at the eye line
+    p.line_segment([c + vec2(-2.6, -9.0), c + vec2(2.6, -9.0)], Stroke::new(1.4, th().bg));
 }
 
 enum ColIcon {

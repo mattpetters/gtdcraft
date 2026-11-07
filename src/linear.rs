@@ -53,7 +53,7 @@ pub fn api_key(stored: &str) -> Option<String> {
     Some(stored.trim().to_string()).filter(|k| !k.is_empty()).or_else(|| std::env::var("LINEAR_API_KEY").ok().filter(|k| !k.is_empty()))
 }
 
-fn gql(key: &str, query: &str, vars: Value) -> Result<Value, String> {
+pub(crate) fn gql(key: &str, query: &str, vars: Value) -> Result<Value, String> {
     let resp = ureq::post("https://api.linear.app/graphql")
         .set("Authorization", key)
         .set("Content-Type", "application/json")

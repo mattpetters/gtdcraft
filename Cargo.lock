@@ -1691,7 +1691,7 @@ dependencies = [
 
 [[package]]
 name = "gtdcraft"
-version = "0.20.1"
+version = "0.23.1"
 dependencies = [
  "block2 0.6.2",
  "chrono",

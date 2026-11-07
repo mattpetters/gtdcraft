@@ -258,6 +258,19 @@ pub fn fields_block(fields: &[(String, String)]) -> String {
 /// repeats, and durations, which aren't dates.
 pub const FIELD_RULES: &str = "Choosing fields: use planned if the action will be performed 'at' or 'on' a date, due if it must be done 'by' or 'before' it, and defer if it can't begin 'until' or 'after' it. A duration ('for 40 minutes') is an estimate, not a date. Include every tag name the person mentions, and put an action in the most likely project. Describe repeats with specific days when given ('weekly every Tuesday', 'monthly on the 17th').";
 
+/// The Review Guru's grooming pass: the default request for a whole-database run (task 0). The person can edit it
+/// before sending.
+pub const GURU_BRIEF: &str = "Do an assisted grooming pass over my whole GTD database. Read everything first (gtd_overview, then gtd_list_tasks and gtd_list_projects), then work through, staging changes for me to approve:\n\
+- Clarify vague actions: rewrite unclear names into a concrete next action.\n\
+- Suggest converting an action that is really several steps into a project with sub-actions.\n\
+- Find orphans (no project) and loose items, and put each in its most likely project; add missing tags.\n\
+- Flag stalled projects (no available next action, or untouched a long time): for each, ask me whether to complete, drop, or add a next action — don't complete or drop anything without my say-so.\n\
+- Suggest a duration estimate where one is missing, and ask about start/defer, planned and due dates, then set the ones I confirm (see the field rules below).\n\
+- Tags audit: list tags that are unused, redundant, or unclear, and suggest merging or removing them.\n\
+- Projects audit: for each project say whether it should stay a parallel project, become a single-action list, or just be one action.\n\
+- Deep links: for actions or projects linked to Linear or GitHub (or whose siblings are), check whether a link can be set up, and link them with gtd_link_linear or by adding the reference.\n\
+Ask me one question at a time when you need a decision, and end with a short summary of everything you staged.";
+
 pub fn prompt(store: &Store, task: u64, request: &str, earlier: Option<&str>, fields: &[(String, String)]) -> String {
     let t = store.task(task);
     let mut ctx = String::new();
@@ -295,8 +308,13 @@ pub fn prompt(store: &Store, task: u64, request: &str, earlier: Option<&str>, fi
             ctx.push_str(&format!("Sub-actions: {}\n", kids.join("; ")));
         }
     }
+    let intro = if t.is_some() {
+        "You're helping with an action in GTDCraft, the person's task manager."
+    } else {
+        "You're the Review Guru for GTDCraft, the person's task manager: an assisted grooming pass over their whole database."
+    };
     format!(
-        "You're helping with an action in GTDCraft, the person's task manager.\n\n{ctx}\n{}{}The request: {request}\n\n\
+        "{intro}\n\n{ctx}\n{}{}The request: {request}\n\n\
          You have GTDCraft's MCP server \"gtdcraft\" (gtd_* tools) for the whole database — start with gtd_overview or \
          gtd_list_tasks. Reading is always fine. Changes you make with the gtd tools (one at a time, or several at once \
          with gtd_batch) are staged: they apply to the person's database only if they approve them afterwards, so make \
@@ -392,7 +410,12 @@ impl Hub {
         let found = crate::acpfind::find();
         let a = found.iter().find(|f| f.name == agent).or(found.first()).ok_or("No ACP agent is installed on the sync server's machine.")?;
         let store = Store::load(&dbp).map_err(|e| format!("couldn't read the database: {e}"))?;
-        let task_name = store.task(task).map(|t| t.name.clone()).ok_or("That action isn't on the sync server yet — sync first.")?;
+        // task 0 = a whole-database run (the Review Guru), anchored to no single action.
+        let task_name = if task == 0 {
+            "Review Guru".to_string()
+        } else {
+            store.task(task).map(|t| t.name.clone()).ok_or("That action isn't on the sync server yet — sync first.")?
+        };
         let earlier = from.and_then(|f| self.get(f)).map(|t| t.summary());
         let id = format!("{}-{}", now().format("%Y%m%d%H%M%S"), task % 100_000);
         let dir = self.work_dir(&id);

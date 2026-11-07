@@ -643,6 +643,144 @@ mod tests {
         assert!(!same_database("abc", "")); // a file from before identities
     }
 
+    /// `decisions_url` is one of the connection fields copied when `connections_modified` is newer
+    /// (merge, the block that starts at the connections stamp). `shared_content` stores that stamp
+    /// and not the URL, and the server skips a save when shared content is unchanged — so a URL
+    /// edit that does not move the stamp never reaches another device. Device settings
+    /// (sync address, token, theme) stay on the copy already here. The newer stamp publishes the
+    /// whole connection bundle, including keys, not the URL by itself.
+    #[test]
+    fn decisions_url_propagates_only_when_connections_modified_advances() {
+        let older = now() - Duration::hours(2);
+        let newer = now() - Duration::hours(1);
+        let mut mac = Store::default();
+        mac.settings.decisions_on = true;
+        mac.settings.decisions_provider = "local".into();
+        mac.settings.decisions_url = "http://127.0.0.1:8001".into();
+        mac.settings.decisions_model = "clef-flash".into();
+        mac.settings.decisions_key = "secret-decisions".into();
+        mac.settings.decisions_account = "acct".into();
+        mac.settings.linear_key = "lin_secret".into();
+        mac.settings.github_token = "gh_secret".into();
+        mac.settings.ai_key = "ai_secret".into();
+        mac.settings.sync_url = "http://mac.lan:8765".into();
+        mac.settings.sync_token = "device-token".into();
+        mac.settings.theme = "Focus Dark".into();
+        mac.settings.connections_modified = Some(older);
+
+        let mut url_only = mac.clone();
+        url_only.settings.decisions_url = "http://127.0.0.1:8642".into();
+        assert_eq!(shared_content(&url_only), shared_content(&mac));
+        let stayed = shared_content(&url_only).to_string();
+        assert!(
+            !stayed.contains("8642"),
+            "shared_content tracks the stamp, not the URL"
+        );
+        assert!(stayed.contains("connections_modified"));
+        let stayed = merge(&url_only, &mac);
+        assert_eq!(stayed.settings.decisions_url, "http://127.0.0.1:8001");
+        assert_eq!(stayed.settings.connections_modified, Some(older));
+        assert_eq!(stayed.settings.decisions_key, "secret-decisions");
+        assert_eq!(stayed.settings.sync_token, "device-token");
+        assert_eq!(stayed.settings.theme, "Focus Dark");
+
+        let mut stamped = url_only.clone();
+        stamped.settings.connections_modified = Some(newer);
+        assert_ne!(shared_content(&stamped), shared_content(&mac));
+        let moved = merge(&stamped, &mac);
+        assert_eq!(moved.settings.decisions_url, "http://127.0.0.1:8642");
+        assert_eq!(moved.settings.connections_modified, Some(newer));
+        assert_eq!(moved.settings.decisions_key, "secret-decisions");
+        assert_eq!(moved.settings.decisions_model, "clef-flash");
+        assert_eq!(moved.settings.decisions_on, true);
+        assert_eq!(moved.settings.linear_key, "lin_secret");
+        assert_eq!(moved.settings.github_token, "gh_secret");
+        assert_eq!(moved.settings.ai_key, "ai_secret");
+        assert_eq!(moved.settings.sync_url, "http://mac.lan:8765");
+        assert_eq!(moved.settings.sync_token, "device-token");
+        assert_eq!(moved.settings.theme, "Focus Dark");
+
+        // an older stamp must not replace a newer URL
+        let mut stale = mac.clone();
+        stale.settings.decisions_url = "http://127.0.0.1:8001/v1/systemone".into();
+        assert_eq!(
+            merge(&stale, &moved).settings.decisions_url,
+            "http://127.0.0.1:8642"
+        );
+        // the stamp publishes every connection field from that copy, keys included
+        let mut bundle = stamped.clone();
+        bundle.settings.decisions_key = "other-key".into();
+        assert_eq!(merge(&bundle, &mac).settings.decisions_key, "other-key");
+        assert_eq!(
+            merge(&bundle, &mac).settings.decisions_url,
+            "http://127.0.0.1:8642"
+        );
+
+        // through the server: no new stamp, no new revision and the stored URL stays;
+        // a newer stamp is what the other device receives, without its own sync token
+        let dir =
+            std::env::temp_dir().join(format!("gtdcraft-decisions-sync-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let port = 31000 + (std::process::id() % 1000) as u16;
+        let listen = format!("127.0.0.1:{port}");
+        let cfg = ServerConfig {
+            listen: listen.clone(),
+            data: dir.clone(),
+            token: "tk".into(),
+            clef: String::new(),
+            agents: false,
+        };
+        std::thread::spawn(move || serve(cfg));
+        std::thread::sleep(std::time::Duration::from_millis(300));
+        let url = format!("http://{listen}");
+        let mut mac = mac;
+        mac.id_base = 1 << 32;
+        mac.add_task("Keep me", None, None);
+        let mac = merge(&sync_with(&url, "tk", &mac, 30).expect("sync server"), &mac);
+        let stored_path = db_path(&dir, &mac.db_id);
+        let rev0 = rev(&stored_path);
+        std::thread::sleep(std::time::Duration::from_millis(30));
+        let mut url_only = mac.clone();
+        url_only.settings.decisions_url = "http://127.0.0.1:8642".into();
+        let echoed = sync_with(&url, "tk", &url_only, 30).unwrap();
+        assert_eq!(echoed.settings.decisions_url, "http://127.0.0.1:8001");
+        assert_eq!(rev(&stored_path), rev0);
+        assert_eq!(
+            Store::load(&stored_path).unwrap().settings.decisions_url,
+            "http://127.0.0.1:8001"
+        );
+
+        let mut stamped = mac.clone();
+        stamped.settings.decisions_url = "http://127.0.0.1:8642".into();
+        stamped.settings.connections_modified = Some(newer);
+        let echoed = sync_with(&url, "tk", &stamped, 30).unwrap();
+        assert_eq!(echoed.settings.decisions_url, "http://127.0.0.1:8642");
+        assert_eq!(echoed.settings.decisions_key, "secret-decisions");
+        assert_eq!(
+            Store::load(&stored_path).unwrap().settings.decisions_url,
+            "http://127.0.0.1:8642"
+        );
+
+        let mut phone = Store::default();
+        phone.id_base = 2 << 32;
+        phone.db_id = mac.db_id.clone();
+        phone.settings.sync_url = "http://phone.local:8765".into();
+        phone.settings.sync_token = "phone-token".into();
+        phone.settings.theme = "Focus Light".into();
+        phone.settings.decisions_url = "http://127.0.0.1:8001".into();
+        phone.settings.connections_modified = Some(older);
+        let remote = sync_with(&url, "tk", &phone, 30).unwrap();
+        let phone = merge(&remote, &phone);
+        assert_eq!(phone.settings.decisions_url, "http://127.0.0.1:8642");
+        assert_eq!(phone.settings.decisions_key, "secret-decisions");
+        assert_eq!(phone.settings.linear_key, "lin_secret");
+        assert_eq!(phone.settings.sync_url, "http://phone.local:8765");
+        assert_eq!(phone.settings.sync_token, "phone-token");
+        assert_eq!(phone.settings.theme, "Focus Light");
+        assert!(phone.tasks.iter().any(|t| t.name == "Keep me"));
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
     #[test]
     fn a_hung_decision_upstream_never_blocks_sync() {
         // an upstream that accepts and never answers in time (a stuck Clef)
@@ -859,6 +997,7 @@ impl crate::Gtd {
                     crate::stats::live::reload_widgets();
                     self.sync_msg = format!("Synced at {}", crate::model::now().format("%-I:%M %p"));
                     self.sync_failures = 0;
+                    self.status.synced_at = Some(crate::model::now());
                     self.sync_fail_hidden = false;
                 }
                 Err(e) => {

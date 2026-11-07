@@ -485,6 +485,14 @@ pub struct Settings {
     /// Off by default; delay in main.rs.
     #[serde(default)]
     pub auto_hide_completed: bool,
+    /// The Review Guru's cadence gate: it's available again only every `guru_every_days`. Off = always available.
+    #[serde(default = "yes")]
+    pub guru_cadence: bool,
+    #[serde(default = "default_guru_days")]
+    pub guru_every_days: u32,
+    /// When the Guru last ran (per device, like the rest of Settings below layout/connections).
+    #[serde(default)]
+    pub last_guru: Option<Dt>,
     #[serde(default = "default_theme")]
     pub theme: String,
     /// Follow macOS light/dark with the two themes below.
@@ -614,6 +622,9 @@ fn quick_size_default() -> [f32; 2] {
 fn pomo_default() -> [u32; 4] {
     [25, 5, 15, 4]
 }
+fn default_guru_days() -> u32 {
+    7
+}
 fn default_provider() -> String {
     "claude".into()
 }
@@ -655,6 +666,17 @@ pub enum SecMove {
 }
 
 impl Settings {
+    /// Days until the Review Guru is available again: `<= 0` means ready now, `> 0` is the zen cooldown left.
+    pub fn guru_days_left(&self, now: Dt) -> i64 {
+        if !self.guru_cadence {
+            return 0;
+        }
+        match self.last_guru {
+            None => 0,
+            Some(last) => self.guru_every_days as i64 - (now.date() - last.date()).num_days(),
+        }
+    }
+
     /// The saved order with unknown keys dropped and new sections appended.
     pub fn inspector_order(&self) -> Vec<String> {
         let mut out: Vec<String> = self.inspector_order.iter().filter(|k| INSPECTOR_SECTIONS.iter().any(|s| s.0 == k.as_str())).cloned().collect();
@@ -698,17 +720,34 @@ impl Settings {
     }
 }
 
+/// The due-soon cutoff for an interval in seconds. A negative interval counts as none. In whole days (`by_day`), the
+/// interval is rounded to days and the cutoff is the start of today plus that many days, minus one second — so "two
+/// days" means through the end of tomorrow, whatever the time now. Otherwise it's simply now plus the interval.
+pub fn due_soon_cutoff_for(interval_secs: i64, by_day: bool, now: Dt) -> Dt {
+    let interval = interval_secs.max(0);
+    if !by_day {
+        return now + Duration::seconds(interval);
+    }
+    let days = (interval as f64 / 86_400.0).round() as i64;
+    (now.date() + Duration::days(days)).and_time(NaiveTime::MIN) - Duration::seconds(1)
+}
+
+/// "Due soon" by default: two days, in seconds (Settings › Dates & Times keeps it in whole days).
+pub const DUE_SOON_INTERVAL_SECS: i64 = 172800;
+
 impl Default for Settings {
     fn default() -> Self {
         Settings {
-            // two days
-            due_soon_days: 2,
+            due_soon_days: (DUE_SOON_INTERVAL_SECS as f64 / 86_400.0).round() as u32,
             default_due_time: NaiveTime::from_hms_opt(17, 0, 0).unwrap(),
             default_defer_time: NaiveTime::from_hms_opt(0, 0, 0).unwrap(),
             default_planned_time: NaiveTime::from_hms_opt(9, 0, 0).unwrap(),
             // ProjectInfoReviewRepetitionString "@1w"
             review_every_days: 7,
             auto_hide_completed: false,
+            guru_cadence: true,
+            guru_every_days: 7,
+            last_guru: None,
             theme: default_theme(),
             follow_system: false,
             light_theme: default_light(),
@@ -1697,10 +1736,9 @@ impl Store {
         }
     }
 
-    /// Last moment that counts as due soon: the start of today plus N days (`due_soon_days`), minus 1 second.
-    /// Due on or before it = due soon.
+    /// Last moment that counts as due soon (`due_soon_days` whole days). Due on or before it = due soon.
     pub fn due_soon_cutoff(&self, now: Dt) -> Dt {
-        (now.date() + Duration::days(self.settings.due_soon_days as i64)).and_time(NaiveTime::MIN) - Duration::seconds(1)
+        due_soon_cutoff_for(self.settings.due_soon_days as i64 * 86_400, true, now)
     }
 
     pub fn derive(&self, now: Dt) -> Derived {
@@ -1952,6 +1990,39 @@ impl Store {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn due_soon_cutoff_rules() {
+        let now = chrono::NaiveDate::from_ymd_opt(2026, 11, 5).unwrap().and_hms_opt(15, 30, 0).unwrap();
+        let end_of = |d: u32| chrono::NaiveDate::from_ymd_opt(2026, 11, d).unwrap().and_hms_opt(23, 59, 59).unwrap();
+        assert_eq!(due_soon_cutoff_for(172_800, true, now), end_of(6)); // two days: through the end of tomorrow
+        assert_eq!(due_soon_cutoff_for(129_600, true, now), end_of(6)); // 1.5 days rounds to two
+        assert_eq!(due_soon_cutoff_for(0, true, now), end_of(4)); // none: nothing ahead is due soon
+        assert_eq!(due_soon_cutoff_for(-5, true, now), end_of(4)); // negative counts as none
+        assert_eq!(due_soon_cutoff_for(3_600, false, now), now + Duration::hours(1)); // not by day: now + interval
+        assert_eq!(Settings::default().due_soon_days, 2);
+        let s = Store::default();
+        assert_eq!(s.due_soon_cutoff(now), end_of(6));
+    }
+
+    #[test]
+    fn guru_cadence_gate() {
+        let day = |s: &str| NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M").unwrap();
+        let mut st = Settings { guru_every_days: 7, ..Settings::default() };
+        // never run: ready now
+        st.last_guru = None;
+        assert_eq!(st.guru_days_left(day("2026-11-05 09:00")), 0);
+        // ran today: full cooldown, same-day time ignored (dates only)
+        st.last_guru = Some(day("2026-11-05 08:00"));
+        assert_eq!(st.guru_days_left(day("2026-11-05 23:00")), 7);
+        // partway through
+        assert_eq!(st.guru_days_left(day("2026-11-10 09:00")), 2);
+        // on the 7th day: ready (<= 0)
+        assert!(st.guru_days_left(day("2026-11-12 09:00")) <= 0);
+        // cadence off: always ready regardless of last run
+        st.guru_cadence = false;
+        assert_eq!(st.guru_days_left(day("2026-11-05 09:00")), 0);
+    }
 
     #[test]
     fn place_notify_loads_old_data_and_round_trips() {

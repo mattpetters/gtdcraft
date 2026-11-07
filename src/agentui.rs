@@ -167,6 +167,13 @@ impl Gtd {
         self.agentui.msg.clear();
     }
 
+    /// Open the compose sheet for a Review Guru pass: task 0 (the whole database), prefilled with the grooming brief.
+    pub(crate) fn guru_compose(&mut self) {
+        let agent = self.agentui.agents.as_ref().and_then(|a| a.first().cloned()).unwrap_or_default();
+        self.agentui.compose = Some(Compose { task: 0, agent, text: agent::GURU_BRIEF.to_string(), from: None, template: None, fields: vec![] });
+        self.agentui.msg.clear();
+    }
+
     fn agent_action(&mut self, id: &str, action: &str, body: Value) {
         self.agentui.busy = true;
         self.agent_call("POST", format!("/v1/agent/threads/{id}/{action}"), Some(body), Got::Done);
@@ -175,7 +182,7 @@ impl Gtd {
     /// The sheet that starts a thread: the action, which agent, and what to do.
     pub(crate) fn agent_compose_ui(&mut self, ctx: &egui::Context) {
         let Some(c) = self.agentui.compose.as_mut() else { return };
-        let name = self.store.task(c.task).map(|t| t.name.clone()).unwrap_or_default();
+        let name = if c.task == 0 { "Review Guru — your whole database".to_string() } else { self.store.task(c.task).map(|t| t.name.clone()).unwrap_or_default() };
         let agents = self.agentui.agents.clone().unwrap_or_default();
         let templates = self.store.settings.agent_templates.clone();
         let msg = self.agentui.msg.clone();
@@ -265,6 +272,11 @@ impl Gtd {
                 }
             }
             let c = self.agentui.compose.take().expect("compose");
+            // a Review Guru pass (whole database) starts its zen cooldown now
+            if c.task == 0 {
+                self.store.settings.last_guru = Some(crate::model::now());
+                self.touch();
+            }
             self.agentui.busy = true;
             // the server needs the action: sync first, then start
             self.sync_due = Some(0.0);

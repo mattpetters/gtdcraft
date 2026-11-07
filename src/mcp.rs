@@ -72,7 +72,7 @@ fn tools() -> Value {
     add_props["name"] = json!({"type":"string"});
     let mut upd_props = task_fields;
     upd_props["id"] = json!({"type":"integer"});
-    json!([
+    let mut v = json!([
         {"name":"gtd_overview","description":"Counts for Inbox, Flagged, Forecast (overdue / due soon), projects due for review.","inputSchema":{"type":"object","properties":{}}},
         {"name":"gtd_list_tasks","description":"List tasks with computed status. view: inbox | available | flagged | forecast | completed | changed | all. Optional project, tag, query filters.",
          "inputSchema":{"type":"object","properties":{"view":{"type":"string"},"project":{"type":"string"},"tag":{"type":"string"},"query":{"type":"string"},"limit":{"type":"integer"}}}},
@@ -100,7 +100,10 @@ fn tools() -> Value {
          "inputSchema":{"type":"object","properties":{"questions":{"type":"object"},"state":{},"task_ids":{"type":"array","items":{"type":"integer"}}},"required":["questions"]}},
         {"name":"gtd_batch","description":"Run several gtd_* tool calls in order (a plan of changes in one step); each result is returned in order, and the batch stops at the first error. calls: [{name, arguments}].",
          "inputSchema":{"type":"object","properties":{"calls":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"arguments":{"type":"object"}},"required":["name"]}}},"required":["calls"]}}
-    ])
+    ]);
+    // TEMPORARY: remove this push with src/decisions_url_set.rs.
+    v.as_array_mut().expect("tool list").push(crate::decisions_url_set::tool_spec());
+    v
 }
 
 /// Dates as people type them ("tomorrow 5pm", "fri", "+3d", "2026-11-15 17:00"); see dates.rs.
@@ -264,6 +267,11 @@ pub fn call(path: &Path, name: &str, a: &Value) -> Result<Value, String> {
             out.push(r);
         }
         return Ok(json!(out));
+    }
+    // TEMPORARY: remove this dispatch with src/decisions_url_set.rs. It must stay ahead of
+    // load_or_new so a URL write cannot create a database or rewrite any other field.
+    if name == crate::decisions_url_set::TOOL_NAME {
+        return crate::decisions_url_set::set_decisions_url(path, a);
     }
     let mut s = Store::load_or_new(path);
     // this device's ID range (sync); an agent thread on the sync server mints from the server's (GTDCRAFT_ID_BASE)

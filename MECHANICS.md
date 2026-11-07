@@ -10,6 +10,8 @@ Status numbers: Blocked 0, Available 1, Next 2, Completed 3, DueSoon 4, Overdue 
 4. overdue → Overdue (beats defer and sequence)
 5. blocked by a future defer date → Blocked (deferred)
 6. due soon → DueSoon
+   (due on or before the due-soon cutoff: the interval — default 172800 s, two days — rounded to whole days; the start
+   of today plus that many days, minus one second; a negative interval counts as none; `due_soon_cutoff_for`)
 7. the next task of its project → Next
 8. otherwise blocked → Blocked, else Available
 

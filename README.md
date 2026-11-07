@@ -89,6 +89,7 @@ Every picture below is GTDCraft itself, drawn by its own `--screenshot` mode, no
 | **Files** | New / Open / Save As / Export (.json, .jsonc, .jsonl), git version history with restore, Sync Now |
 | **Mac** | Native menu bar laid out like the classic one, notifications, places with maps, custom shortcuts, 38 themes |
 | **Sync** | `gtdcraft --sync-server --token <secret>` on any machine; each device syncs in the background (per-record merge, deletes travel, settings stay per device) |
+| **Status** | Lights for sync, decisions and agents at the foot of the rail (iPhone: the tab bar); tap for a summary and Retry. Settings › Status adds Check, Reset and Troubleshoot for every subsystem and connection |
 | **iPhone and iPad** | The same app on iOS (one pane at a time on a phone); `./make-ios.sh` runs it in the simulator, `./make-ios-device.sh` installs it on a real iPhone or iPad |
 | **Web activity** | A Chrome extension (`extension/chrome`) that tracks sites, searches and YouTube videos, on task or off, with your interests over time; Stats shows each one with a YouTube thumbnail and a clickable link, and agents can read it all |
 
@@ -116,6 +117,7 @@ The sync server: `./target/release/gtdcraft --sync-server --listen 0.0.0.0:8765 
 `GTDCRAFT_SYNC_TOKEN`), data in `~/Library/Application Support/GTDCraft/sync-server/gtdcraft.jsonl`.
 `GET /v1/health` says `{"ok":true}` (with the token, it also lists each subsystem: sync, decisions, agents, so a dead Clef or agent never stops syncing), `POST /v1/sync` takes a database and returns the merged one. Point every device at
 `http://<this-mac>.local:8765` with the same token in Settings › Sync.
+Devices that drifted apart offline: [docs/SYNC-RECOVERY.md](docs/SYNC-RECOVERY.md) (3-way merge with `tools/merge3.py`).
 
 ## Your data
 
@@ -151,6 +153,7 @@ they go through the sync server (`--sync-server --clef-url http://127.0.0.1:8001
 | Calendar | `src/calendar.rs` and the small `gtdcraft-calendar` helper app (it asks macOS for Calendar access as its own app) |
 | Themes | `src/theme.rs`, `themes/*.json`, `themes/make_popular.py` |
 | Sync | `src/sync.rs` (merge, client, `--sync-server`) |
+| Status | `src/status.rs` (lights, Settings › Status, troubleshooting) |
 | iOS | `make-ios.sh`, `src/menu_ios.rs`, `.cargo/config.toml` |
 | Web activity | `extension/chrome` (the extension), `src/webact.rs` (GTDCraft's receiver and summary) |
 
